@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient"
+    android:padding="24dp"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- TÍTULO -->
+        <TextView
+            android:id="@+id/tvTituloRepostaje"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="⛽ Añadir repostaje"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:letterSpacing="0.08"
+            android:shadowColor="#80000000"
+            android:shadowDx="0"
+            android:shadowDy="4"
+            android:shadowRadius="6"
+            android:layout_marginBottom="28dp" />
+
+        <!-- FECHA -->
+        <EditText
+            android:id="@+id/etFecha"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:hint="Fecha"
+            android:focusable="false"
+            android:clickable="true"
+            android:inputType="none"
+            android:background="@drawable/bg_input"
+            android:padding="14dp"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="16dp" />
+
+        <!-- LITROS -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_input"
+            android:layout_marginBottom="16dp"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="14dp">
+
+            <EditText
+                android:id="@+id/etLitros"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Litros"
+                android:inputType="numberDecimal"
+                android:background="@android:color/transparent"
+                android:textColor="@android:color/black"
+                android:padding="0dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="L"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:paddingStart="8dp" />
+        </LinearLayout>
+
+        <!-- PRECIO -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:orientation="horizontal"
+            android:background="@drawable/bg_input"
+            android:layout_marginBottom="16dp"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="14dp">
+
+            <EditText
+                android:id="@+id/etPrecio"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Precio"
+                android:inputType="numberDecimal"
+                android:background="@android:color/transparent"
+                android:textColor="@android:color/black"
+                android:padding="0dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="€"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:paddingStart="8dp" />
+        </LinearLayout>
+
+        <!-- KILÓMETROS -->
+        <EditText
+            android:id="@+id/etKilometros"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:hint="Kilómetros actuales"
+            android:inputType="number"
+            android:background="@drawable/bg_input"
+            android:padding="14dp"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="28dp" />
+
+        <!-- GUARDAR -->
+        <Button
+            android:id="@+id/btnGuardarRepostaje"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="Guardar repostaje"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:background="@drawable/bg_button_primary"
+            android:stateListAnimator="@animator/button_anim" />
+
+    </LinearLayout>
+</ScrollView>

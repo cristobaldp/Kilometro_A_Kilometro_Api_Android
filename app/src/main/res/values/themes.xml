@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 🔵 TEMA AZUL (por defecto) -->
+    <style name="Theme.Kilometro" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/blue_500</item>
+        <item name="colorSecondary">@color/blue_700</item>
+        <item name="android:statusBarColor">@color/blue_700</item>
+    </style>
+
+    <!-- 🟢 TEMA VERDE -->
+    <style name="Theme.Kilometro.Green" parent="Theme.Kilometro">
+        <item name="colorPrimary">@color/green_500</item>
+        <item name="colorSecondary">@color/green_700</item>
+        <item name="android:statusBarColor">@color/green_700</item>
+    </style>
+
+    <!-- 🔴 TEMA ROJO -->
+    <style name="Theme.Kilometro.Red" parent="Theme.Kilometro">
+        <item name="colorPrimary">@color/red_500</item>
+        <item name="colorSecondary">@color/red_700</item>
+        <item name="android:statusBarColor">@color/red_700</item>
+    </style>
+
+</resources>

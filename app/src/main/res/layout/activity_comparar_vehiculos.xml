@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient"
+    android:padding="24dp"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+
+        <!-- TÍTULO -->
+        <TextView
+            android:id="@+id/tvTituloComparar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🚗 Comparar vehículos"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:gravity="center"
+            android:letterSpacing="0.08"
+            android:shadowColor="#80000000"
+            android:shadowDx="0"
+            android:shadowDy="4"
+            android:shadowRadius="6"
+            android:layout_marginBottom="32dp" />
+
+        <!-- VEHÍCULO 1 -->
+        <Spinner
+            android:id="@+id/spVehiculo1"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_input"
+            android:layout_marginBottom="12dp" />
+
+        <!-- VEHÍCULO 2 -->
+        <Spinner
+            android:id="@+id/spVehiculo2"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_input"
+            android:layout_marginBottom="24dp" />
+
+        <!-- BOTÓN COMPARAR -->
+        <Button
+            android:id="@+id/btnComparar"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="Comparar"
+            android:textStyle="bold"
+            android:textColor="@android:color/white"
+            android:background="@drawable/bg_button_primary"
+            android:stateListAnimator="@animator/button_anim" />
+
+        <!-- RESULTADO -->
+        <TextView
+            android:id="@+id/tvResultado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@android:color/white"
+            android:layout_marginTop="28dp" />
+
+    </LinearLayout>
+</ScrollView>

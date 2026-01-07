@@ -1,0 +1,68 @@
+{
+  "Coches": {
+    "Abarth": ["595", "695"],
+    "Alfa Romeo": ["Giulia", "Stelvio", "Tonale"],
+    "Audi": ["A1", "A3", "A4", "Q3", "Q5"],
+    "BMW": ["Serie 1", "Serie 3", "X1", "X3"],
+    "Citroën": ["C3", "C4", "C5 Aircross", "Berlingo"],
+    "Cupra": ["Ateca", "Formentor", "Born"],
+    "Dacia": ["Sandero", "Duster", "Jogger"],
+    "Fiat": ["500", "Panda", "Tipo"],
+    "Ford": ["Fiesta", "Focus", "Kuga", "Puma", "Mustang"],
+    "Honda": ["Civic", "HR-V", "Jazz"],
+    "Hyundai": ["i10", "i20", "i30", "Tucson", "Kona"],
+    "Kia": ["Rio", "Ceed", "Sportage", "Stonic", "Sorento"],
+    "Mazda": ["Mazda2", "Mazda3", "CX-30"],
+    "Mercedes": ["Clase A", "Clase B", "GLA", "GLC"],
+    "Mini": ["One", "Cooper", "Countryman"],
+    "Nissan": ["Micra", "Juke", "Qashqai", "X-Trail"],
+    "Opel": ["Corsa", "Astra", "Crossland", "Mokka"],
+    "Peugeot": ["208", "2008", "308", "3008"],
+    "Renault": ["Clio", "Captur", "Megane", "Arkana"],
+    "Seat": ["Ibiza", "Leon", "Arona", "Ateca"],
+    "Skoda": ["Fabia", "Octavia", "Karoq"],
+    "Toyota": ["Yaris", "Corolla", "C-HR", "RAV4"],
+    "Volkswagen": ["Polo", "Golf", "T-Roc", "Tiguan"],
+    "Volvo": ["XC40", "XC60", "S60"]
+  },
+
+  "Motos": {
+    "Honda": ["CB500F", "CB650R", "Africa Twin", "Rebel 500"],
+    "Yamaha": ["MT-07", "R1", "Tracer 7", "XMAX 300"],
+    "Kawasaki": ["Z650", "Ninja 400", "Versys 650"],
+    "Suzuki": ["GSX-S750", "V-Strom 650"],
+    "Ducati": ["Monster", "Panigale V2", "Scrambler"],
+    "BMW": ["G310R", "F900R", "R1250GS"],
+    "KTM": ["Duke 390", "Duke 790", "Adventure 890"],
+    "Triumph": ["Street Triple", "Tiger 900"],
+    "Harley Davidson": ["Iron 883", "Street Bob"]
+  },
+
+  "Furgonetas": {
+    "Ford": ["Transit", "Tourneo Custom"],
+    "Volkswagen": ["Transporter", "Caddy"],
+    "Citroën": ["Berlingo", "Jumpy"],
+    "Peugeot": ["Partner", "Expert"],
+    "Renault": ["Kangoo", "Trafic"],
+    "Mercedes": ["Vito", "Sprinter"],
+    "Fiat": ["Doblò", "Talento"]
+  },
+
+  "Camiones": {
+    "Volvo Trucks": ["FH16", "FMX", "FM"],
+    "Scania": ["R-Series", "S-Series", "P-Series"],
+    "Mercedes-Benz Trucks": ["Actros", "Arocs"],
+    "Iveco": ["Stralis", "Eurocargo", "S-Way"],
+    "MAN": ["TGX", "TGS"],
+    "DAF": ["XF", "CF"]
+  },
+
+  "Industriales": {
+    "John Deere": ["Serie 5E", "Serie 6M"],
+    "New Holland": ["T5", "T6"],
+    "Kubota": ["M7002", "L1361"],
+    "Caterpillar": ["320", "420F2", "950M"],
+    "Bobcat": ["S650", "T770"],
+    "Komatsu": ["PC210", "WA320"]
+  }
+}

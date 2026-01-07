@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient"
+    android:padding="20dp">
+
+    <!-- TÍTULO / CONSUMO MEDIO -->
+    <TextView
+        android:id="@+id/tvConsumoMedio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="⛽ Consumo medio: -- L/100km"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:letterSpacing="0.06"
+        android:shadowColor="#80000000"
+        android:shadowDx="0"
+        android:shadowDy="3"
+        android:shadowRadius="4"
+        android:layout_marginBottom="16dp" />
+
+    <!-- LISTA DE REPOSTAJES -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvRepostajes"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="12dp" />
+
+    <!-- AÑADIR REPOSTAJE -->
+    <Button
+        android:id="@+id/btnAddRepostaje"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:text="➕ Añadir repostaje"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:background="@drawable/bg_button_primary"
+        android:stateListAnimator="@animator/button_anim" />
+
+</LinearLayout>

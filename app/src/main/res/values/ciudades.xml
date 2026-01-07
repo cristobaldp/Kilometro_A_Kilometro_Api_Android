@@ -1,0 +1,122 @@
+<resources>
+    <string-array name="ciudades">
+        <item>Selecciona una ciudad</item>
+
+        <!-- GRANDES CIUDADES -->
+        <item>Madrid</item>
+        <item>Barcelona</item>
+        <item>Valencia</item>
+        <item>Sevilla</item>
+        <item>Zaragoza</item>
+        <item>Málaga</item>
+        <item>Murcia</item>
+        <item>Palma de Mallorca</item>
+        <item>Las Palmas de Gran Canaria</item>
+        <item>Bilbao</item>
+
+        <!-- ANDALUCÍA -->
+        <item>Córdoba</item>
+        <item>Granada</item>
+        <item>Almería</item>
+        <item>Cádiz</item>
+        <item>Huelva</item>
+        <item>Jaén</item>
+        <item>Jerez de la Frontera</item>
+        <item>Marbella</item>
+
+        <!-- COMUNIDAD VALENCIANA -->
+        <item>Alicante</item>
+        <item>Elche</item>
+        <item>Castellón de la Plana</item>
+        <item>Torrevieja</item>
+
+        <!-- CATALUÑA -->
+        <item>Tarragona</item>
+        <item>Lleida</item>
+        <item>Girona</item>
+        <item>Badalona</item>
+        <item>Sabadell</item>
+        <item>Terrassa</item>
+
+        <!-- CASTILLA-LA MANCHA -->
+        <item>Toledo</item>
+        <item>Albacete</item>
+        <item>Ciudad Real</item>
+        <item>Cuenca</item>
+        <item>Guadalajara</item>
+        <item>Talavera de la Reina</item>
+
+        <!-- CASTILLA Y LEÓN -->
+        <item>Valladolid</item>
+        <item>Salamanca</item>
+        <item>Burgos</item>
+        <item>León</item>
+        <item>Palencia</item>
+        <item>Segovia</item>
+        <item>Ávila</item>
+        <item>Zamora</item>
+        <item>Soria</item>
+
+        <!-- GALICIA -->
+        <item>A Coruña</item>
+        <item>Vigo</item>
+        <item>Santiago de Compostela</item>
+        <item>Lugo</item>
+        <item>Ourense</item>
+        <item>Pontevedra</item>
+        <item>Ferrol</item>
+
+        <!-- PAÍS VASCO -->
+        <item>San Sebastián</item>
+        <item>Vitoria-Gasteiz</item>
+        <item>Barakaldo</item>
+        <item>Getxo</item>
+
+        <!-- MADRID (COMUNIDAD) -->
+        <item>Alcalá de Henares</item>
+        <item>Móstoles</item>
+        <item>Leganés</item>
+        <item>Getafe</item>
+        <item>Fuenlabrada</item>
+        <item>Alcorcón</item>
+
+        <!-- EXTREMADURA -->
+        <item>Badajoz</item>
+        <item>Cáceres</item>
+        <item>Mérida</item>
+        <item>Plasencia</item>
+
+        <!-- ARAGÓN -->
+        <item>Huesca</item>
+        <item>Teruel</item>
+        <item>Calatayud</item>
+
+        <!-- ASTURIAS -->
+        <item>Oviedo</item>
+        <item>Gijón</item>
+        <item>Avilés</item>
+
+        <!-- CANTABRIA -->
+        <item>Santander</item>
+        <item>Torrelavega</item>
+
+        <!-- LA RIOJA -->
+        <item>Logroño</item>
+        <item>Calahorra</item>
+
+        <!-- NAVARRA -->
+        <item>Pamplona</item>
+        <item>Tudela</item>
+
+        <!-- CANARIAS -->
+        <item>Santa Cruz de Tenerife</item>
+        <item>San Cristóbal de La Laguna</item>
+        <item>Arrecife</item>
+        <item>Puerto del Rosario</item>
+
+        <!-- BALEARES -->
+        <item>Ibiza</item>
+        <item>Mahón</item>
+        <item>Ciutadella</item>
+    </string-array>
+</resources>

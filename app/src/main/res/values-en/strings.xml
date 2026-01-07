@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Kilometer by Kilometer</string>
+
+    <!-- Settings -->
+    <string name="ajustes">Settings</string>
+    <string name="idioma">Language</string>
+    <string name="tema">Theme</string>
+    <string name="guardar">Save</string>
+
+    <!-- Languages -->
+    <string name="idioma_es">Spanish</string>
+    <string name="idioma_en">English</string>
+
+    <!-- Themes -->
+    <string name="tema_azul">Blue</string>
+    <string name="tema_verde">Green</string>
+    <string name="tema_rojo">Red</string>
+    <string name="tema_claro">Light</string>
+
+</resources>

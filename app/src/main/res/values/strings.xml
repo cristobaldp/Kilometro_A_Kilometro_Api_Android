@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- App -->
+    <string name="app_name">Kilómetro a Kilómetro</string>
+
+    <!-- Ajustes -->
+    <string name="ajustes">Ajustes</string>
+    <string name="idioma">Idioma</string>
+    <string name="tema">Tema</string>
+    <string name="guardar">Guardar</string>
+
+    <!-- Idiomas -->
+    <string name="idioma_es">Español</string>
+    <string name="idioma_en">Inglés</string>
+
+    <!-- Temas -->
+    <string name="tema_azul">Azul</string>
+    <string name="tema_verde">Verde</string>
+    <string name="tema_rojo">Rojo</string>
+    <string name="tema_claro">Claro</string>
+
+</resources>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_gradient"
+    android:padding="20dp">
+
+    <!-- TÍTULO -->
+    <TextView
+        android:id="@+id/tvTituloVehiculos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🚗 Mis vehículos"
+        android:textSize="26sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:gravity="center"
+        android:letterSpacing="0.08"
+        android:shadowColor="#80000000"
+        android:shadowDx="0"
+        android:shadowDy="4"
+        android:shadowRadius="6"
+        android:layout_marginBottom="20dp" />
+
+    <!-- AÑADIR VEHÍCULO -->
+    <Button
+        android:id="@+id/btnAddVehiculo"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:text="➕ Añadir vehículo"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:background="@drawable/bg_button_primary"
+        android:stateListAnimator="@animator/button_anim"
+        android:layout_marginBottom="12dp" />
+
+    <!-- LISTA -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvVehiculos"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/transparent"
+        android:layout_marginBottom="12dp" />
+
+    <!-- VEHÍCULO ACTIVO -->
+    <Button
+        android:id="@+id/btnVehiculoActivo"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:text="⭐ Establecer como activo"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:background="@drawable/bg_button_secondary"
+        android:stateListAnimator="@animator/button_anim"
+        android:enabled="false"
+        android:layout_marginBottom="8dp" />
+
+    <!-- BORRAR VEHÍCULO -->
+    <Button
+        android:id="@+id/btnBorrarVehiculo"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:text="🗑 Borrar vehículo"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:background="@drawable/bg_button_secondary"
+        android:stateListAnimator="@animator/button_anim"
+        android:enabled="false" />
+
+</LinearLayout>
