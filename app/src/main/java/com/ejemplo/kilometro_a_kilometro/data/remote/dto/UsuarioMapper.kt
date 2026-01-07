@@ -11,6 +11,7 @@ fun UsuarioDto.toDomain(): Usuario {
         email = email ?: "",
         telefono = telefono ?: "",
         ciudad = ciudad ?: "",
-        fechaNacimiento = fecha_nacimiento ?: ""
+        fechaNacimiento = fecha_nacimiento ?: "",
+        vehiculoActivoId = vehiculoActivoId
     )
 }

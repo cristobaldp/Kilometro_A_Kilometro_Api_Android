@@ -1,8 +1,7 @@
 package com.ejemplo.kilometro_a_kilometro.domain.model
 
 data class Vehiculo(
-    val id: Int = 0,
-    val userId: Int,
+    val id: Int,
     val tipo: String,
     val marca: String,
     val modelo: String,

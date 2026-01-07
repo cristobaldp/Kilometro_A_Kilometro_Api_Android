@@ -1,93 +1,77 @@
 package com.ejemplo.kilometro_a_kilometro.data.repository
 
-import android.content.ContentValues
-import android.content.Context
-import com.ejemplo.kilometro_a_kilometro.data.local.database.DatabaseHelper
+import com.ejemplo.kilometro_a_kilometro.data.remote.api.ApiClient
+import com.ejemplo.kilometro_a_kilometro.data.remote.dto.VehiculoCreateDto
+import com.ejemplo.kilometro_a_kilometro.data.remote.dto.VehiculoDto
+import com.ejemplo.kilometro_a_kilometro.data.remote.dto.toDomain
 import com.ejemplo.kilometro_a_kilometro.domain.model.Vehiculo
+import com.ejemplo.kilometro_a_kilometro.domain.model.Usuario
+class VehiculoRepository {
 
-class VehiculoRepository(context: Context) {
-
-    private val dbHelper = DatabaseHelper(context)
+    private val api = ApiClient.apiService
 
     /**
-     * Obtiene todos los vehículos de un usuario concreto
+     * Obtener vehículos del usuario
      */
-    fun obtenerVehiculosPorUsuario(userId: Int): List<Vehiculo> {
-        val lista = mutableListOf<Vehiculo>()
-        val db = dbHelper.readableDatabase
+    suspend fun getVehiculos(userId: Int): List<Vehiculo> {
+        return try {
+            val response = api.getVehiculos(userId)
 
-        val cursor = db.rawQuery(
-            "SELECT * FROM vehiculos WHERE user_id = ?",
-            arrayOf(userId.toString())
-        )
+            if (response.isSuccessful) {
+                val dtoList: List<VehiculoDto> = response.body() ?: emptyList()
+                dtoList.map { it.toDomain() }
+            } else {
+                emptyList()
+            }
 
-        while (cursor.moveToNext()) {
-            val vehiculo = Vehiculo(
-                id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
-                userId = cursor.getInt(cursor.getColumnIndexOrThrow("user_id")),
-                tipo = cursor.getString(cursor.getColumnIndexOrThrow("tipo")),
-                marca = cursor.getString(cursor.getColumnIndexOrThrow("marca")),
-                modelo = cursor.getString(cursor.getColumnIndexOrThrow("modelo")),
-                matricula = cursor.getString(cursor.getColumnIndexOrThrow("matricula")),
-                anio = cursor.getInt(cursor.getColumnIndexOrThrow("anio")),
-                combustible = cursor.getString(cursor.getColumnIndexOrThrow("combustible")),
-                consumo = cursor.getDouble(cursor.getColumnIndexOrThrow("consumo"))
-            )
-
-            lista.add(vehiculo)
+        } catch (e: Exception) {
+            emptyList()
         }
-
-        cursor.close()
-        db.close()
-
-        return lista
     }
 
     /**
-     * Inserta un nuevo vehículo
+     * Crear vehículo
      */
-    fun insertarVehiculo(vehiculo: Vehiculo): Boolean {
-        val db = dbHelper.writableDatabase
-
-        val values = ContentValues().apply {
-            put("user_id", vehiculo.userId)
-            put("tipo", vehiculo.tipo)
-            put("marca", vehiculo.marca)
-            put("modelo", vehiculo.modelo)
-            put("matricula", vehiculo.matricula)
-            put("anio", vehiculo.anio)
-            put("combustible", vehiculo.combustible)
-            put("consumo", vehiculo.consumo)
+    suspend fun crearVehiculo(dto: VehiculoCreateDto): Boolean {
+        return try {
+            val response = api.crearVehiculo(dto)
+            response.isSuccessful
+        } catch (e: Exception) {
+            false
         }
-
-        val resultado = db.insert("vehiculos", null, values)
-        db.close()
-
-        return resultado != -1L
     }
 
-    /**
-     * Comprueba si una matrícula ya existe en la BD
-     */
-    fun existeMatricula(matricula: String): Boolean {
-        val db = dbHelper.readableDatabase
-
-        val cursor = db.rawQuery(
-            "SELECT id FROM vehiculos WHERE matricula = ?",
-            arrayOf(matricula)
-        )
-
-        val existe = cursor.moveToFirst()
-
-        cursor.close()
-        db.close()
-
-        return existe
-    }
-    fun borrarVehiculo(id: Int) {
-        val db = dbHelper.writableDatabase
-        db.delete("vehiculos", "id = ?", arrayOf(id.toString()))
-        db.close()
+    suspend fun borrarVehiculo(vehiculoId: Int): Boolean {
+        return try {
+            val response = api.borrarVehiculo(vehiculoId)
+            response.isSuccessful
+        } catch (e: Exception) {
+            false
+        }
     }
 
+    suspend fun establecerVehiculoActivo(
+        userId: Int,
+        vehiculoId: Int
+    ): Boolean {
+        return try {
+            val response = api.establecerVehiculoActivo(userId, vehiculoId)
+            response.isSuccessful
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    suspend fun getUsuario(userId: Int): Usuario? {
+        return try {
+            val response = api.getUsuario(userId)
+            if (response.isSuccessful) {
+                response.body()?.toDomain()
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
 }

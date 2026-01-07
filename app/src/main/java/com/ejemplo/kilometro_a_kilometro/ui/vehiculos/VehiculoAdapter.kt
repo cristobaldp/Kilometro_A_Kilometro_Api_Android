@@ -11,7 +11,7 @@ import com.ejemplo.kilometro_a_kilometro.domain.model.Vehiculo
 
 class VehiculoAdapter(
     private val vehiculos: List<Vehiculo>,
-    private val vehiculoActivoId: Int?,
+    private val vehiculoActivoId: Int?,              // ⭐ NUEVO
     private val onClick: (Vehiculo) -> Unit
 ) : RecyclerView.Adapter<VehiculoAdapter.VehiculoViewHolder>() {
 
@@ -20,7 +20,7 @@ class VehiculoAdapter(
     class VehiculoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvTitulo: TextView = view.findViewById(R.id.tvTitulo)
         val tvDetalle: TextView = view.findViewById(R.id.tvDetalle)
-        val layout: View = view.findViewById(R.id.layoutItem)
+        val layout: View = view
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VehiculoViewHolder {
@@ -32,14 +32,18 @@ class VehiculoAdapter(
     override fun onBindViewHolder(holder: VehiculoViewHolder, position: Int) {
         val vehiculo = vehiculos[position]
 
-        val activo = vehiculo.id == vehiculoActivoId
+        // ⭐ Mostrar vehículo activo
+        val esActivo = vehiculo.id == vehiculoActivoId
         holder.tvTitulo.text =
-            if (activo) "⭐ ${vehiculo.marca} ${vehiculo.modelo}"
-            else "${vehiculo.marca} ${vehiculo.modelo}"
+            if (esActivo)
+                "⭐ ${vehiculo.marca} ${vehiculo.modelo}"
+            else
+                "${vehiculo.marca} ${vehiculo.modelo}"
 
         holder.tvDetalle.text =
             "Matrícula: ${vehiculo.matricula} | ${vehiculo.combustible}"
 
+        // 🔹 Resaltar selección
         holder.layout.setBackgroundColor(
             if (position == selectedPosition)
                 Color.parseColor("#FFDDDD")
@@ -58,4 +62,13 @@ class VehiculoAdapter(
     }
 
     override fun getItemCount(): Int = vehiculos.size
+
+    // 🔹 Exponer vehículo seleccionado (borrar / activar)
+    fun getVehiculoSeleccionado(): Vehiculo? {
+        return if (selectedPosition != RecyclerView.NO_POSITION) {
+            vehiculos[selectedPosition]
+        } else {
+            null
+        }
+    }
 }

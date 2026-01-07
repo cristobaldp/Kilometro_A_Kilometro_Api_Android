@@ -8,5 +8,6 @@ data class Usuario(
     val email: String,
     val telefono: String,
     val ciudad: String,
-    val fechaNacimiento: String
+    val fechaNacimiento: String,
+    val vehiculoActivoId: Int? = null   // ⭐ IMPORTANTE
 )
