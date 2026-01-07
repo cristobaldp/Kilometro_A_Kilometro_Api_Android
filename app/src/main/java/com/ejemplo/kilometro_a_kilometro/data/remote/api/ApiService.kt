@@ -76,6 +76,14 @@ interface ApiService {
     ): Response<Unit>
 
 
+    @PUT("usuarios/{userId}/password")
+    suspend fun cambiarPassword(
+        @Path("userId") userId: Int,
+        @Body body: Map<String, String>
+    ): Response<Unit>
+
+
+
 
 
 

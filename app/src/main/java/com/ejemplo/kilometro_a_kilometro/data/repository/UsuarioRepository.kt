@@ -84,4 +84,17 @@ class UsuarioRepository {
             null
         }
     }
+
+    suspend fun cambiarPassword(
+        userId: Int,
+        nuevaPassword: String
+    ): Boolean {
+
+        val response = api.cambiarPassword(
+            userId,
+            mapOf("password" to nuevaPassword)
+        )
+
+        return response.isSuccessful
+    }
 }
