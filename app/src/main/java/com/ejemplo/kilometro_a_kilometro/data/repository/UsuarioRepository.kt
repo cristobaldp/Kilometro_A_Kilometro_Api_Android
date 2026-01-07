@@ -10,25 +10,32 @@ class UsuarioRepository {
 
     private val api = ApiClient.apiService
 
+    // =========================
+    // 🔐 LOGIN
+    // =========================
     suspend fun login(username: String, password: String): Usuario? {
-        val response = api.login(
-            LoginRequestDto(username, password)
-        )
+        return try {
+            val response = api.login(
+                LoginRequestDto(username, password)
+            )
 
-        if (!response.isSuccessful) {
-            return null
+            if (!response.isSuccessful) return null
+
+            val dto = response.body() ?: return null
+
+            // 🔒 Protección extra
+            if (dto.nombre.isNullOrBlank()) return null
+
+            dto.toDomain()
+
+        } catch (e: Exception) {
+            null
         }
-
-        val dto = response.body() ?: return null
-
-        // 🔒 Protección extra
-        if (dto.nombre.isNullOrBlank()) {
-            return null
-        }
-
-        return dto.toDomain()
     }
 
+    // =========================
+    // 📝 REGISTER
+    // =========================
     suspend fun register(
         nombre: String,
         apellidos: String,
@@ -39,25 +46,42 @@ class UsuarioRepository {
         fechaNacimiento: String,
         password: String
     ): Usuario? {
-
-        val response = api.register(
-            RegisterRequestDto(
-                nombre,
-                apellidos,
-                username,
-                email,
-                telefono,
-                ciudad,
-                fechaNacimiento,
-                password
+        return try {
+            val response = api.register(
+                RegisterRequestDto(
+                    nombre,
+                    apellidos,
+                    username,
+                    email,
+                    telefono,
+                    ciudad,
+                    fechaNacimiento,
+                    password
+                )
             )
-        )
 
-        if (response.isSuccessful) {
-            val dto = response.body() ?: return null
-            return dto.toDomain()
+            if (!response.isSuccessful) return null
+
+            response.body()?.toDomain()
+
+        } catch (e: Exception) {
+            null
         }
+    }
 
-        return null
+    // =========================
+    // 👤 GET USUARIO (CLAVE)
+    // =========================
+    suspend fun getUsuario(userId: Int): Usuario? {
+        return try {
+            val response = api.getUsuario(userId)
+
+            if (!response.isSuccessful) return null
+
+            response.body()?.toDomain()
+
+        } catch (e: Exception) {
+            null
+        }
     }
 }

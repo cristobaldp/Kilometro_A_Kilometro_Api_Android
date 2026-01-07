@@ -57,6 +57,27 @@ interface ApiService {
         @Path("userId") userId: Int
     ): Response<UsuarioDto>
 
+    // =========================
+// ⛽ REPOSTAJES
+// =========================
+    @GET("repostajes/{vehiculo_id}")
+    suspend fun getRepostajes(
+        @Path("vehiculo_id") vehiculoId: Int
+    ): Response<List<RepostajeDto>>
+
+    @POST("repostajes")
+    suspend fun crearRepostaje(
+        @Body data: RepostajeCreateDto
+    ): Response<Unit>
+
+    @DELETE("repostajes/{id}")
+    suspend fun borrarRepostaje(
+        @Path("id") repostajeId: Int
+    ): Response<Unit>
+
+
+
+
 
 
 

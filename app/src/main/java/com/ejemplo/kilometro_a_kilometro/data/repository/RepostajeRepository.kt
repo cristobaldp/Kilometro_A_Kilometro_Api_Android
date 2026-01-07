@@ -1,61 +1,54 @@
 package com.ejemplo.kilometro_a_kilometro.data.repository
 
-import android.content.ContentValues
-import android.content.Context
-import com.ejemplo.kilometro_a_kilometro.data.local.database.DatabaseHelper
+import com.ejemplo.kilometro_a_kilometro.data.remote.api.ApiClient
+import com.ejemplo.kilometro_a_kilometro.data.remote.dto.toDomain
 import com.ejemplo.kilometro_a_kilometro.domain.model.Repostaje
+import com.ejemplo.kilometro_a_kilometro.data.remote.dto.RepostajeCreateDto
+class RepostajeRepository {
 
-class RepostajeRepository(context: Context) {
+    private val api = ApiClient.apiService
 
-    private val dbHelper = DatabaseHelper(context)
-
-    // ➕ Guardar repostaje
-    fun insertarRepostaje(repostaje: Repostaje) {
-        val db = dbHelper.writableDatabase
-
-        val values = ContentValues().apply {
-            put("vehiculo_id", repostaje.vehiculoId)
-            put("fecha", repostaje.fecha)
-            put("litros", repostaje.litros)
-            put("precio_total", repostaje.precioTotal)
-            put("kilometros", repostaje.kilometros)
+    suspend fun getRepostajes(vehiculoId: Int): List<Repostaje> {
+        return try {
+            val response = api.getRepostajes(vehiculoId)
+            if (response.isSuccessful) {
+                response.body()?.map { it.toDomain() } ?: emptyList()
+            } else {
+                emptyList()
+            }
+        } catch (e: Exception) {
+            emptyList()
         }
-
-        db.insert("repostajes", null, values)
-        db.close()
+    }
+    suspend fun crearRepostaje(
+        vehiculoId: Int,
+        fecha: String,
+        litros: Double,
+        precioTotal: Double,
+        kilometros: Int
+    ): Boolean {
+        return try {
+            val response = api.crearRepostaje(
+                RepostajeCreateDto(
+                    vehiculo_id = vehiculoId,
+                    fecha = fecha,
+                    litros = litros,
+                    precio_total = precioTotal,
+                    kilometros = kilometros
+                )
+            )
+            response.isSuccessful
+        } catch (e: Exception) {
+            false
+        }
     }
 
-    // 📄 Obtener repostajes de un vehículo
-    fun obtenerRepostajesPorVehiculo(vehiculoId: Int): List<Repostaje> {
-        val db = dbHelper.readableDatabase
-        val lista = mutableListOf<Repostaje>()
-
-        val cursor = db.rawQuery(
-            """
-            SELECT * FROM repostajes
-            WHERE vehiculo_id = ?
-            ORDER BY kilometros ASC
-            """,
-            arrayOf(vehiculoId.toString())
-        )
-
-        if (cursor.moveToFirst()) {
-            do {
-                lista.add(
-                    Repostaje(
-                        id = cursor.getInt(cursor.getColumnIndexOrThrow("id")),
-                        vehiculoId = cursor.getInt(cursor.getColumnIndexOrThrow("vehiculo_id")),
-                        fecha = cursor.getString(cursor.getColumnIndexOrThrow("fecha")),
-                        litros = cursor.getDouble(cursor.getColumnIndexOrThrow("litros")),
-                        precioTotal = cursor.getDouble(cursor.getColumnIndexOrThrow("precio_total")),
-                        kilometros = cursor.getInt(cursor.getColumnIndexOrThrow("kilometros"))
-                    )
-                )
-            } while (cursor.moveToNext())
+    suspend fun borrarRepostaje(repostajeId: Int): Boolean {
+        return try {
+            val response = api.borrarRepostaje(repostajeId)
+            response.isSuccessful
+        } catch (e: Exception) {
+            false
         }
-
-        cursor.close()
-        db.close()
-        return lista
     }
 }
