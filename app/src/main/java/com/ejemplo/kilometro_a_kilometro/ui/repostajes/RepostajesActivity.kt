@@ -2,9 +2,8 @@ package com.ejemplo.kilometro_a_kilometro.ui.repostajes
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +14,8 @@ import com.ejemplo.kilometro_a_kilometro.data.repository.RepostajeRepository
 import com.ejemplo.kilometro_a_kilometro.data.repository.UsuarioRepository
 import com.ejemplo.kilometro_a_kilometro.domain.model.Repostaje
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.util.Locale
 
 class RepostajesActivity : AppCompatActivity() {
 
@@ -22,17 +23,14 @@ class RepostajesActivity : AppCompatActivity() {
     private val usuarioRepository = UsuarioRepository()
 
     private var repostajeSeleccionado: Repostaje? = null
+    private lateinit var repostajes: List<Repostaje>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_repostajes)
 
-        // =========================
-        // USER ID
-        // =========================
         val userId = intent.getIntExtra("USER_ID", -1)
         if (userId == -1) {
-            Toast.makeText(this, "Usuario no válido", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -41,129 +39,137 @@ class RepostajesActivity : AppCompatActivity() {
         val rvRepostajes = findViewById<RecyclerView>(R.id.rvRepostajes)
         val btnAddRepostaje = findViewById<Button>(R.id.btnAddRepostaje)
         val btnBorrarRepostaje = findViewById<Button>(R.id.btnBorrarRepostaje)
-
-        btnBorrarRepostaje.isEnabled = false
+        val spAnio = findViewById<Spinner>(R.id.spFiltroAnio)
+        val spMes = findViewById<Spinner>(R.id.spFiltroMes)
 
         rvRepostajes.layoutManager = LinearLayoutManager(this)
 
         lifecycleScope.launch {
 
-            // =========================
-            // 1️⃣ USUARIO + VEHÍCULO ACTIVO
-            // =========================
             val usuario = usuarioRepository.getUsuario(userId)
+            val vehiculoId = usuario?.vehiculoActivoId ?: return@launch
 
-            if (usuario == null || usuario.vehiculoActivoId == null) {
-                Toast.makeText(
-                    this@RepostajesActivity,
-                    "Selecciona un vehículo activo primero",
-                    Toast.LENGTH_LONG
-                ).show()
-                finish()
-                return@launch
+            repostajes = repostajeRepository
+                .getRepostajes(vehiculoId)
+                .sortedBy { it.kilometros }
+
+            // =========================
+            // FILTROS
+            // =========================
+            val anios = repostajes
+                .map { it.fecha.substring(0, 4).toInt() }
+                .distinct()
+                .sortedDescending()
+
+            val meses = (1..12).toList()
+
+            spAnio.adapter = ArrayAdapter(
+                this@RepostajesActivity,
+                android.R.layout.simple_spinner_item,
+                anios
+            ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+
+            spMes.adapter = ArrayAdapter(
+                this@RepostajesActivity,
+                android.R.layout.simple_spinner_item,
+                meses.map {
+                    LocalDate.of(2000, it, 1)
+                        .month
+                        .getDisplayName(java.time.format.TextStyle.FULL, Locale("es"))
+                        .replaceFirstChar { c -> c.uppercase() }
+                }
+            ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+
+            fun aplicarFiltro() {
+                val anio = spAnio.selectedItem as Int
+                val mes = spMes.selectedItemPosition + 1
+
+                val filtrados = repostajes.filter {
+                    val partes = it.fecha.split("-")
+                    partes[0].toInt() == anio && partes[1].toInt() == mes
+                }
+
+                rvRepostajes.adapter = RepostajeAdapter(filtrados) { r ->
+                    repostajeSeleccionado = r
+                    btnBorrarRepostaje.isEnabled = true
+                }
+
+                // 🔑 CONSUMO MEDIO DEL MES
+                calcularConsumo(tvConsumoMedio, filtrados)
             }
 
-            val vehiculoActivoId = usuario.vehiculoActivoId
-
-            // =========================
-            // 2️⃣ REPOSTAJES
-            // =========================
-            val repostajes =
-                repostajeRepository.getRepostajes(vehiculoActivoId)
-                    .sortedBy { it.kilometros }
-
-            val adapter = RepostajeAdapter(repostajes) { repostaje ->
-                repostajeSeleccionado = repostaje
-                btnBorrarRepostaje.isEnabled = true
-            }
-
-            rvRepostajes.adapter = adapter
-
-            // =========================
-            // 3️⃣ CONSUMO MEDIO CORRECTO
-            // =========================
-            if (repostajes.size < 2) {
-                tvConsumoMedio.text = "⛽ Consumo medio: -- L/100km"
-            } else {
-
-                var litrosTotales = 0.0
-                var kmTotales = 0
-
-                for (i in 1 until repostajes.size) {
-                    val anterior = repostajes[i - 1]
-                    val actual = repostajes[i]
-
-                    val kmRecorridos =
-                        actual.kilometros - anterior.kilometros
-
-                    if (kmRecorridos > 0) {
-                        litrosTotales += anterior.litros
-                        kmTotales += kmRecorridos
+            spAnio.onItemSelectedListener =
+                object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>,
+                        view: View?,
+                        position: Int,
+                        id: Long
+                    ) {
+                        aplicarFiltro()
                     }
+                    override fun onNothingSelected(parent: AdapterView<*>) {}
                 }
 
-                if (kmTotales > 0) {
-                    val consumoMedio =
-                        (litrosTotales / kmTotales) * 100
+            spMes.onItemSelectedListener = spAnio.onItemSelectedListener
 
-                    tvConsumoMedio.text =
-                        "⛽ Consumo medio: %.2f L/100km".format(consumoMedio)
-                } else {
-                    tvConsumoMedio.text = "⛽ Consumo medio: -- L/100km"
-                }
-            }
+            aplicarFiltro()
 
             // =========================
-            // 4️⃣ AÑADIR REPOSTAJE
+            // AÑADIR
             // =========================
             btnAddRepostaje.setOnClickListener {
                 startActivity(
-                    Intent(
-                        this@RepostajesActivity,
-                        AddRepostajeActivity::class.java
-                    )
+                    Intent(this@RepostajesActivity, AddRepostajeActivity::class.java)
                         .putExtra("USER_ID", userId)
-                        .putExtra("VEHICULO_ID", vehiculoActivoId)
+                        .putExtra("VEHICULO_ID", vehiculoId)
                 )
             }
 
             // =========================
-            // 5️⃣ BORRAR REPOSTAJE
+            // BORRAR
             // =========================
             btnBorrarRepostaje.setOnClickListener {
-
-                val repostaje = repostajeSeleccionado ?: return@setOnClickListener
+                val r = repostajeSeleccionado ?: return@setOnClickListener
 
                 AlertDialog.Builder(this@RepostajesActivity)
                     .setTitle("Borrar repostaje")
-                    .setMessage(
-                        "¿Seguro que quieres borrar el repostaje del ${repostaje.fecha}?"
-                    )
+                    .setMessage("¿Borrar repostaje del ${r.fecha}?")
                     .setPositiveButton("Sí") { _, _ ->
-
                         lifecycleScope.launch {
-                            val ok =
-                                repostajeRepository.borrarRepostaje(repostaje.id)
-
-                            if (ok) {
-                                Toast.makeText(
-                                    this@RepostajesActivity,
-                                    "Repostaje borrado correctamente",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                recreate()
-                            } else {
-                                Toast.makeText(
-                                    this@RepostajesActivity,
-                                    "Error al borrar repostaje",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                            repostajeRepository.borrarRepostaje(r.id)
+                            recreate()
                         }
                     }
                     .setNegativeButton("Cancelar", null)
                     .show()
             }
         }
+    }
+
+    private fun calcularConsumo(tv: TextView, lista: List<Repostaje>) {
+        if (lista.size < 2) {
+            tv.text = "⛽ Consumo medio: -- L/100km"
+            return
+        }
+
+        var litros = 0.0
+        var kms = 0
+
+        for (i in 1 until lista.size) {
+            val ant = lista[i - 1]
+            val act = lista[i]
+            val km = act.kilometros - ant.kilometros
+            if (km > 0) {
+                litros += ant.litros
+                kms += km
+            }
+        }
+
+        tv.text =
+            if (kms > 0)
+                "⛽ Consumo medio: %.2f L/100km".format((litros / kms) * 100)
+            else
+                "⛽ Consumo medio: -- L/100km"
     }
 }

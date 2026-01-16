@@ -47,9 +47,7 @@ class EstadisticasActivity : AppCompatActivity() {
             .apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
 
         val listener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>, view: View?, position: Int, id: Long
-            ) {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 val anio = spAnio.selectedItem as Int
                 val mes = spMes.selectedItemPosition + 1
                 cargarEstadisticas(userId, anio, mes)
@@ -71,12 +69,8 @@ class EstadisticasActivity : AppCompatActivity() {
         val chartConsumo = findViewById<LineChart>(R.id.chartConsumo)
         val chartGasto = findViewById<BarChart>(R.id.chartGasto)
 
-        chartConsumo.setNoDataText("")
-        chartGasto.setNoDataText("")
-
         lifecycleScope.launch {
 
-            // 1️⃣ Usuario + vehículo activo
             val usuario = usuarioRepository.getUsuario(userId)
             val vehiculoId = usuario?.vehiculoActivoId
 
@@ -90,7 +84,6 @@ class EstadisticasActivity : AppCompatActivity() {
                 return@launch
             }
 
-            // 2️⃣ Repostajes filtrados por mes/año
             val repostajes = repostajeRepository.getRepostajes(vehiculoId)
                 .filter {
                     val partes = it.fecha.split("-")
@@ -111,7 +104,6 @@ class EstadisticasActivity : AppCompatActivity() {
 
             tvMensaje.visibility = View.GONE
 
-            // 3️⃣ CÁLCULOS CORRECTOS
             var litrosTotales = 0.0
             var kmTotales = 0
             var gastoTotal = 0.0
@@ -134,41 +126,47 @@ class EstadisticasActivity : AppCompatActivity() {
             tvKm.text = "Kilómetros recorridos: $kmTotales km"
             tvGasto.text = "Gasto total: %.2f €".format(gastoTotal)
 
-            // 4️⃣ GRÁFICA CONSUMO
-            val consumoEntries = repostajes.mapIndexed { index, r ->
+            // 🔑 LIMITAR DATOS DE LAS GRÁFICAS
+            val maxDatos = 10
+            val repostajesGrafica =
+                if (repostajes.size > maxDatos) repostajes.takeLast(maxDatos)
+                else repostajes
+
+            // GRÁFICA CONSUMO
+            val consumoEntries = repostajesGrafica.mapIndexed { index, r ->
                 Entry(index.toFloat(), r.litros.toFloat())
             }
 
-            val consumoDataSet = LineDataSet(consumoEntries, "Litros").apply {
+            val consumoDataSet = LineDataSet(consumoEntries, "Últimos repostajes").apply {
                 color = Color.CYAN
                 setCircleColor(Color.CYAN)
                 lineWidth = 2f
-                valueTextColor = Color.WHITE
+                setDrawValues(false)
             }
 
             chartConsumo.apply {
                 data = LineData(consumoDataSet)
                 description.isEnabled = false
                 axisRight.isEnabled = false
-                animateX(700)
+                animateX(500)
                 invalidate()
             }
 
-            // 5️⃣ GRÁFICA GASTO
-            val gastoEntries = repostajes.mapIndexed { index, r ->
+            // GRÁFICA GASTO
+            val gastoEntries = repostajesGrafica.mapIndexed { index, r ->
                 BarEntry(index.toFloat(), r.precioTotal.toFloat())
             }
 
-            val gastoDataSet = BarDataSet(gastoEntries, "Gasto €").apply {
+            val gastoDataSet = BarDataSet(gastoEntries, "Últimos repostajes (€)").apply {
                 color = Color.parseColor("#FF9800")
-                valueTextColor = Color.WHITE
+                setDrawValues(false)
             }
 
             chartGasto.apply {
                 data = BarData(gastoDataSet)
                 description.isEnabled = false
                 axisRight.isEnabled = false
-                animateY(700)
+                animateY(500)
                 invalidate()
             }
         }
