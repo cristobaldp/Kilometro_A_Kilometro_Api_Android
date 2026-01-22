@@ -64,9 +64,9 @@ class MenuPrincipalActivity : AppCompatActivity() {
             )
         }
 
-        findViewById<CardView>(R.id.cardMapa).setOnClickListener {
+       findViewById<CardView>(R.id.cardMapa).setOnClickListener {
             startActivity(Intent(this, MapaGasolinerasActivity::class.java))
-        }
+       }
 
         findViewById<CardView>(R.id.cardAjustes).setOnClickListener {
             startActivity(

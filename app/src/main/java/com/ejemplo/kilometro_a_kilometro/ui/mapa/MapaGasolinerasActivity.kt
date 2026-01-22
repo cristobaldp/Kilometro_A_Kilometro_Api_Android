@@ -8,9 +8,10 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.ejemplo.kilometro_a_kilometro.R
+import com.ejemplo.kilometro_a_kilometro.data.repository.GasolineraRepository
 import com.ejemplo.kilometro_a_kilometro.domain.model.Gasolinera
-import com.ejemplo.kilometro_a_kilometro.service.GasolineraService
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -18,32 +19,27 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class MapaGasolinerasActivity :
-    AppCompatActivity(),
-    OnMapReadyCallback {
+class MapaGasolinerasActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
-    private lateinit var gasolineraService: GasolineraService
-
-    private val marcadores = mutableMapOf<Marker, Gasolinera>()
+    private val repository = GasolineraRepository()
+    private val marcadores = HashMap<Marker, Gasolinera>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_mapa_gasolineras)
 
-        gasolineraService = GasolineraService(this)
-
         val mapFragment =
             supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        val etLocalidad = findViewById<EditText>(R.id.etLocalidad)
-        val btnBuscar = findViewById<Button>(R.id.btnBuscar)
-
-        btnBuscar.setOnClickListener {
-            val localidad = etLocalidad.text.toString().trim()
-            if (localidad.isEmpty()) {
+        findViewById<Button>(R.id.btnBuscar).setOnClickListener {
+            val localidad = findViewById<EditText>(R.id.etLocalidad).text.toString()
+            if (localidad.isBlank()) {
                 Toast.makeText(this, "Introduce una localidad", Toast.LENGTH_SHORT).show()
             } else {
                 buscarGasolineras(localidad)
@@ -53,17 +49,13 @@ class MapaGasolinerasActivity :
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
-
-        // 📍 Vista inicial España
         map.moveCamera(
             CameraUpdateFactory.newLatLngZoom(
                 LatLng(40.4168, -3.7038), 6f
             )
         )
 
-        // 🪟 Ventana personalizada
         map.setInfoWindowAdapter(object : GoogleMap.InfoWindowAdapter {
-
             override fun getInfoWindow(marker: Marker): View? = null
 
             override fun getInfoContents(marker: Marker): View {
@@ -79,7 +71,7 @@ class MapaGasolinerasActivity :
                 val precios = StringBuilder()
 
                 fun add(nombre: String, valor: Double?) {
-                    if (valor != null && valor > 0) {
+                    if (valor != null) {
                         precios.append("$nombre: %.3f €\n".format(valor))
                     }
                 }
@@ -95,10 +87,8 @@ class MapaGasolinerasActivity :
                 add("GNL", gasolinera.gnl)
 
                 view.findViewById<TextView>(R.id.tvPrecios).text =
-                    if (precios.isNotEmpty())
-                        precios.toString()
-                    else
-                        "Sin precios disponibles"
+                    if (precios.isNotEmpty()) precios.toString()
+                    else "Sin precios disponibles"
 
                 return view
             }
@@ -106,48 +96,43 @@ class MapaGasolinerasActivity :
     }
 
     private fun buscarGasolineras(localidad: String) {
-        map.clear()
-        marcadores.clear()
 
-        gasolineraService.obtenerGasolinerasPorLocalidad(
-            localidad,
-            onSuccess = { lista ->
+        lifecycleScope.launch {
 
-                if (lista.isEmpty()) {
-                    Toast.makeText(
-                        this,
-                        "No se encontraron gasolineras",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    return@obtenerGasolinerasPorLocalidad
-                }
+            val lista = withContext(Dispatchers.IO) {
+                repository.buscarPorLocalidad(localidad)
+            }
 
-                lista.forEach { g ->
-                    val marker = map.addMarker(
-                        MarkerOptions()
-                            .position(LatLng(g.latitud, g.longitud))
-                            .title(g.nombre)
-                    )
-                    if (marker != null) {
-                        marcadores[marker] = g
-                    }
-                }
+            map.clear()
+            marcadores.clear()
 
-                // 📍 Centrar mapa en la primera
-                map.moveCamera(
-                    CameraUpdateFactory.newLatLngZoom(
-                        LatLng(lista[0].latitud, lista[0].longitud),
-                        12f
-                    )
-                )
-            },
-            onError = {
+            if (lista.isEmpty()) {
                 Toast.makeText(
-                    this,
-                    "Error al obtener gasolineras",
+                    this@MapaGasolinerasActivity,
+                    "No se encontraron gasolineras",
                     Toast.LENGTH_SHORT
                 ).show()
+                return@launch
             }
-        )
+
+            lista.forEach {
+                val marker = map.addMarker(
+                    MarkerOptions()
+                        .position(LatLng(it.latitud, it.longitud))
+                        .title(it.nombre)
+                )
+                if (marker != null) {
+                    marcadores[marker] = it
+                }
+            }
+
+            val primera = lista.first()
+            map.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    LatLng(primera.latitud, primera.longitud),
+                    12f
+                )
+            )
+        }
     }
 }

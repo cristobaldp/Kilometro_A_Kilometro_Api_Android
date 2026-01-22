@@ -1,4 +1,4 @@
-package com.ejemplo.kilometro_a_kilometro.data.local.dao
+/*/package com.ejemplo.kilometro_a_kilometro.data.local.dao
 
 import android.content.ContentValues
 import android.content.Context
@@ -94,3 +94,5 @@ class UsuarioDao(context: Context) {
         return usuario
     }
 }
+//
+ */
