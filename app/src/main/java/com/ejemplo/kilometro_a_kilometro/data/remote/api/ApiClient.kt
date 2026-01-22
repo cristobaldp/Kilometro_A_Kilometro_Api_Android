@@ -9,7 +9,7 @@ object ApiClient {
     private const val BASE_URL_DEVICE   = "http://192.168.1.132:8000/"
 
     // Cambiar aquí según dónde pruebes
-    private const val BASE_URL = BASE_URL_DEVICE
+    private const val BASE_URL = BASE_URL_EMULATOR
 
     val apiService: ApiService by lazy {
         Retrofit.Builder()
