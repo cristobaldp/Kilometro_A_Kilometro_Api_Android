@@ -15,6 +15,7 @@ import com.ejemplo.kilometro_a_kilometro.data.repository.UsuarioRepository
 import com.ejemplo.kilometro_a_kilometro.domain.model.Repostaje
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.format.TextStyle
 import java.util.Locale
 
 class RepostajesActivity : AppCompatActivity() {
@@ -29,12 +30,18 @@ class RepostajesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_repostajes)
 
+        // =========================
+        // USER
+        // =========================
         val userId = intent.getIntExtra("USER_ID", -1)
         if (userId == -1) {
             finish()
             return
         }
 
+        // =========================
+        // VIEWS
+        // =========================
         val tvConsumoMedio = findViewById<TextView>(R.id.tvConsumoMedio)
         val rvRepostajes = findViewById<RecyclerView>(R.id.rvRepostajes)
         val btnAddRepostaje = findViewById<Button>(R.id.btnAddRepostaje)
@@ -42,16 +49,25 @@ class RepostajesActivity : AppCompatActivity() {
         val spAnio = findViewById<Spinner>(R.id.spFiltroAnio)
         val spMes = findViewById<Spinner>(R.id.spFiltroMes)
 
+        btnBorrarRepostaje.isEnabled = false
         rvRepostajes.layoutManager = LinearLayoutManager(this)
 
         lifecycleScope.launch {
 
+            // =========================
+            // USUARIO + VEHÍCULO ACTIVO
+            // =========================
             val usuario = usuarioRepository.getUsuario(userId)
             val vehiculoId = usuario?.vehiculoActivoId ?: return@launch
 
             repostajes = repostajeRepository
                 .getRepostajes(vehiculoId)
                 .sortedBy { it.kilometros }
+
+            if (repostajes.isEmpty()) {
+                tvConsumoMedio.text = "⛽ Consumo medio: -- L/100km"
+                return@launch
+            }
 
             // =========================
             // FILTROS
@@ -61,7 +77,12 @@ class RepostajesActivity : AppCompatActivity() {
                 .distinct()
                 .sortedDescending()
 
-            val meses = (1..12).toList()
+            val meses = (1..12).map {
+                LocalDate.of(2000, it, 1)
+                    .month
+                    .getDisplayName(TextStyle.FULL, Locale("es"))
+                    .replaceFirstChar { c -> c.uppercase() }
+            }
 
             spAnio.adapter = ArrayAdapter(
                 this@RepostajesActivity,
@@ -74,17 +95,15 @@ class RepostajesActivity : AppCompatActivity() {
             spMes.adapter = ArrayAdapter(
                 this@RepostajesActivity,
                 android.R.layout.simple_spinner_item,
-                meses.map {
-                    LocalDate.of(2000, it, 1)
-                        .month
-                        .getDisplayName(java.time.format.TextStyle.FULL, Locale("es"))
-                        .replaceFirstChar { c -> c.uppercase() }
-                }
+                meses
             ).apply {
                 setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             }
 
             fun aplicarFiltro() {
+                repostajeSeleccionado = null
+                btnBorrarRepostaje.isEnabled = false
+
                 val anio = spAnio.selectedItem as Int
                 val mes = spMes.selectedItemPosition + 1
 
@@ -93,7 +112,7 @@ class RepostajesActivity : AppCompatActivity() {
                         val partes = it.fecha.split("-")
                         partes[0].toInt() == anio && partes[1].toInt() == mes
                     }
-                    .sortedBy { it.kilometros } // 🔑 IMPRESCINDIBLE
+                    .sortedBy { it.kilometros }
 
                 rvRepostajes.adapter = RepostajeAdapter(filtrados) { r ->
                     repostajeSeleccionado = r
@@ -153,6 +172,9 @@ class RepostajesActivity : AppCompatActivity() {
         }
     }
 
+    // =========================
+    // CONSUMO MEDIO CORRECTO
+    // =========================
     private fun calcularConsumo(tv: TextView, lista: List<Repostaje>) {
         if (lista.size < 2) {
             tv.text = "⛽ Consumo medio: -- L/100km"
@@ -170,7 +192,7 @@ class RepostajesActivity : AppCompatActivity() {
 
             val km = actual.kilometros - anterior.kilometros
 
-            // mismo filtro que escritorio
+            // 🔒 Validación realista
             if (km in 1..1500) {
                 litrosTotales += anterior.litros
                 kmTotales += km
@@ -183,5 +205,4 @@ class RepostajesActivity : AppCompatActivity() {
             else
                 "⛽ Consumo medio: -- L/100km"
     }
-
 }
