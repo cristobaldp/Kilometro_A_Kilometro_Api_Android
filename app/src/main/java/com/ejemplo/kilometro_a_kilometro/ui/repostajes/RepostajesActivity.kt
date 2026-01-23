@@ -67,7 +67,9 @@ class RepostajesActivity : AppCompatActivity() {
                 this@RepostajesActivity,
                 android.R.layout.simple_spinner_item,
                 anios
-            ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+            ).apply {
+                setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            }
 
             spMes.adapter = ArrayAdapter(
                 this@RepostajesActivity,
@@ -78,23 +80,26 @@ class RepostajesActivity : AppCompatActivity() {
                         .getDisplayName(java.time.format.TextStyle.FULL, Locale("es"))
                         .replaceFirstChar { c -> c.uppercase() }
                 }
-            ).apply { setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item) }
+            ).apply {
+                setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            }
 
             fun aplicarFiltro() {
                 val anio = spAnio.selectedItem as Int
                 val mes = spMes.selectedItemPosition + 1
 
-                val filtrados = repostajes.filter {
-                    val partes = it.fecha.split("-")
-                    partes[0].toInt() == anio && partes[1].toInt() == mes
-                }
+                val filtrados = repostajes
+                    .filter {
+                        val partes = it.fecha.split("-")
+                        partes[0].toInt() == anio && partes[1].toInt() == mes
+                    }
+                    .sortedBy { it.kilometros } // 🔑 IMPRESCINDIBLE
 
                 rvRepostajes.adapter = RepostajeAdapter(filtrados) { r ->
                     repostajeSeleccionado = r
                     btnBorrarRepostaje.isEnabled = true
                 }
 
-                // 🔑 CONSUMO MEDIO DEL MES
                 calcularConsumo(tvConsumoMedio, filtrados)
             }
 
@@ -108,6 +113,7 @@ class RepostajesActivity : AppCompatActivity() {
                     ) {
                         aplicarFiltro()
                     }
+
                     override fun onNothingSelected(parent: AdapterView<*>) {}
                 }
 
@@ -153,23 +159,29 @@ class RepostajesActivity : AppCompatActivity() {
             return
         }
 
-        var litros = 0.0
-        var kms = 0
+        val ordenados = lista.sortedBy { it.kilometros }
 
-        for (i in 1 until lista.size) {
-            val ant = lista[i - 1]
-            val act = lista[i]
-            val km = act.kilometros - ant.kilometros
-            if (km > 0) {
-                litros += ant.litros
-                kms += km
+        var litrosTotales = 0.0
+        var kmTotales = 0.0
+
+        for (i in 1 until ordenados.size) {
+            val anterior = ordenados[i - 1]
+            val actual = ordenados[i]
+
+            val km = actual.kilometros - anterior.kilometros
+
+            // mismo filtro que escritorio
+            if (km in 1..1500) {
+                litrosTotales += anterior.litros
+                kmTotales += km
             }
         }
 
         tv.text =
-            if (kms > 0)
-                "⛽ Consumo medio: %.2f L/100km".format((litros / kms) * 100)
+            if (kmTotales > 0)
+                "⛽ Consumo medio: %.2f L/100km".format((litrosTotales / kmTotales) * 100)
             else
                 "⛽ Consumo medio: -- L/100km"
     }
+
 }

@@ -3,6 +3,7 @@ package com.ejemplo.kilometro_a_kilometro.data.repository
 import com.ejemplo.kilometro_a_kilometro.domain.model.Gasolinera
 import org.json.JSONObject
 import java.net.URL
+import java.text.Normalizer
 
 class GasolineraRepository {
 
@@ -17,30 +18,45 @@ class GasolineraRepository {
 
         val resultado = mutableListOf<Gasolinera>()
 
-        fun precio(o: JSONObject, campo: String): Double? {
-            return o.optString(campo)
-                .replace(",", ".")
-                .toDoubleOrNull()
+        // 🔹 Normalizar texto (quita tildes, mayúsculas, etc.)
+        fun normalizar(texto: String): String {
+            return Normalizer.normalize(texto, Normalizer.Form.NFD)
+                .replace("\\p{InCombiningDiacriticalMarks}+".toRegex(), "")
+                .uppercase()
+                .trim()
         }
+
+        // 🔹 Conversión segura de precios
+        fun precio(o: JSONObject, campo: String): Double? {
+            val valor = o.optString(campo).trim()
+            if (valor.isEmpty()) return null
+            return valor.replace(",", ".").toDoubleOrNull()
+        }
+
+        val localidadNormalizada = normalizar(localidad)
 
         for (i in 0 until lista.length()) {
             val o = lista.getJSONObject(i)
 
-            if (!o.getString("Municipio")
-                    .contains(localidad, ignoreCase = true)
-            ) continue
+            val municipioApi = o.optString("Municipio")
+            val municipioNormalizado = normalizar(municipioApi)
+
+            // 🔍 Comparación robusta
+            if (!municipioNormalizado.contains(localidadNormalizada)) continue
 
             resultado.add(
                 Gasolinera(
-                    nombre = o.getString("Rótulo"),
-                    direccion = o.getString("Dirección"),
-                    municipio = o.getString("Municipio"),
-                    latitud = o.getString("Latitud")
+                    nombre = o.optString("Rótulo"),
+                    direccion = o.optString("Dirección"),
+                    municipio = municipioApi,
+
+                    latitud = o.optString("Latitud")
                         .replace(",", ".")
-                        .toDouble(),
-                    longitud = o.getString("Longitud (WGS84)")
+                        .toDoubleOrNull() ?: continue,
+
+                    longitud = o.optString("Longitud (WGS84)")
                         .replace(",", ".")
-                        .toDouble(),
+                        .toDoubleOrNull() ?: continue,
 
                     gasolina95 = precio(o, "Precio Gasolina 95 E5"),
                     gasolina98 = precio(o, "Precio Gasolina 98 E5"),

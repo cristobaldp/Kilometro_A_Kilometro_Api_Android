@@ -49,6 +49,7 @@ class MapaGasolinerasActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
+
         map.moveCamera(
             CameraUpdateFactory.newLatLngZoom(
                 LatLng(40.4168, -3.7038), 6f
@@ -56,39 +57,47 @@ class MapaGasolinerasActivity : AppCompatActivity(), OnMapReadyCallback {
         )
 
         map.setInfoWindowAdapter(object : GoogleMap.InfoWindowAdapter {
+
             override fun getInfoWindow(marker: Marker): View? = null
 
             override fun getInfoContents(marker: Marker): View {
                 val view = LayoutInflater.from(this@MapaGasolinerasActivity)
                     .inflate(R.layout.info_window_gasolinera, null)
 
-                val gasolinera = marcadores[marker]!!
+                val gasolinera = marcadores[marker]
 
-                view.findViewById<TextView>(R.id.tvNombre).text = gasolinera.nombre
-                view.findViewById<TextView>(R.id.tvDireccion).text =
-                    "${gasolinera.direccion} (${gasolinera.municipio})"
+                if (gasolinera != null) {
 
-                val precios = StringBuilder()
+                    view.findViewById<TextView>(R.id.tvNombre).text =
+                        gasolinera.nombre
 
-                fun add(nombre: String, valor: Double?) {
-                    if (valor != null) {
-                        precios.append("$nombre: %.3f €\n".format(valor))
+                    view.findViewById<TextView>(R.id.tvDireccion).text =
+                        "${gasolinera.direccion} (${gasolinera.municipio})"
+
+                    val precios = StringBuilder()
+
+                    fun add(nombre: String, valor: Double?) {
+                        if (valor != null) {
+                            precios.append("$nombre: %.3f €\n".format(valor))
+                        }
                     }
+
+                    add("Gasolina 95", gasolinera.gasolina95)
+                    add("Gasolina 98", gasolinera.gasolina98)
+                    add("Gasóleo A", gasolinera.gasoleoA)
+                    add("Gasóleo Premium", gasolinera.gasoleoPremium)
+                    add("Biodiesel", gasolinera.biodiesel)
+                    add("Bioetanol", gasolinera.bioetanol)
+                    add("GLP", gasolinera.glp)
+                    add("GNC", gasolinera.gnc)
+                    add("GNL", gasolinera.gnl)
+
+                    view.findViewById<TextView>(R.id.tvPrecios).text =
+                        if (precios.isNotEmpty())
+                            precios.toString()
+                        else
+                            "Sin precios disponibles"
                 }
-
-                add("Gasolina 95", gasolinera.gasolina95)
-                add("Gasolina 98", gasolinera.gasolina98)
-                add("Gasóleo A", gasolinera.gasoleoA)
-                add("Gasóleo Premium", gasolinera.gasoleoPremium)
-                add("Biodiesel", gasolinera.biodiesel)
-                add("Bioetanol", gasolinera.bioetanol)
-                add("GLP", gasolinera.glp)
-                add("GNC", gasolinera.gnc)
-                add("GNL", gasolinera.gnl)
-
-                view.findViewById<TextView>(R.id.tvPrecios).text =
-                    if (precios.isNotEmpty()) precios.toString()
-                    else "Sin precios disponibles"
 
                 return view
             }
@@ -115,14 +124,17 @@ class MapaGasolinerasActivity : AppCompatActivity(), OnMapReadyCallback {
                 return@launch
             }
 
-            lista.forEach {
+            lista.forEach { gasolinera ->
+
                 val marker = map.addMarker(
                     MarkerOptions()
-                        .position(LatLng(it.latitud, it.longitud))
-                        .title(it.nombre)
+                        .position(LatLng(gasolinera.latitud, gasolinera.longitud))
+                        .title(gasolinera.nombre)
                 )
+
                 if (marker != null) {
-                    marcadores[marker] = it
+                    marcadores[marker] = gasolinera
+                    marker.showInfoWindow()
                 }
             }
 
